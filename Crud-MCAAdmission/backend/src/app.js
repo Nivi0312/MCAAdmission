@@ -17,6 +17,22 @@ mongoose
 app.get('/', (req, res) => {
   res.send("server started")
 })
+app.get('/getEligibleStudents', async (req, res) => {
+  try {
+    let response = await Student.find({
+      $and: [
+        { $expr: { $gt: [{ $toInt: "$tenthMarkInPercentage" }, parseInt(req.query.s1)] } },
+        { $expr: { $gt: [{ $toInt: "$twelthMarkInPercentage" }, parseInt(req.query.h1)] } },
+        { $expr: { $gt: [{ $toInt: "$sem5" }, parseInt(req.query.UG1)] } }
+      ]
+    });
+    console.log("Response:", response); // Log the response for debugging
+    res.send(response);
+  } catch (e) {
+    console.error("Error:", e); // Log the error for debugging
+    res.status(500).send("Internal Server Error"); // Send an error response
+  }
+});
 
 app.get('/getAllStudents', async(req, res) => {
     try{
